@@ -1,0 +1,19 @@
+{
+  "name": "pw-service-proxy-handlers",
+  "version": "0.1.0",
+  "description": "Handlers for node-pw-service-proxy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mvcbox/node-pw-service-proxy-handlers.git"
+  },
+  "author": "mvcbox.org@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mvcbox/node-pw-service-proxy-handlers/issues"
+  },
+  "homepage": "https://github.com/mvcbox/node-pw-service-proxy-handlers#readme"
+}
