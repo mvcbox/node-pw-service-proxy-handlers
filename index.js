@@ -2,5 +2,6 @@
 
 module.exports = {
     consolePacketLogger: require('./handlers/console-packet-logger'),
-    validatePacketGetSavedMsg: require('./handlers/validate-packet-get-saved-msg')
+    validatePacketGetSavedMsg: require('./handlers/validate-packet-get-saved-msg'),
+    validatePacketCreateRole: require('./handlers/validate-packet-create-role')
 };
