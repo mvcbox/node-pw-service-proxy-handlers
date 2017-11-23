@@ -5,16 +5,18 @@
  * @return {{only: undefined, except: undefined, handler: handler}}
  */
 module.exports = function (options) {
+    options = options || {};
+
     return {
         /**
          * @type {Array}
          */
-        only: undefined,
+        only: options.only,
 
         /**
          * @type {Array}
          */
-        except: undefined,
+        except: options.except,
 
         /**
          * @param {Object} packet
