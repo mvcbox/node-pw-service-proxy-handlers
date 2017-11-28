@@ -37,7 +37,14 @@ module.exports = function (options) {
             if (0x4F === packet.opcode || 0x12C3 === packet.opcode) {
                 roleid = packet.payload.offset(2).readInt32BE();
             } else if (0x60 === packet.opcode) {
-                roleid = packet.payload.offset(2).offset(packet.payload.readCUInt()).readInt32BE();
+                packet.payload.offset(2);
+                let srcLen = packet.payload.readCUInt();
+                packet.payload.offset(srcLen);
+                roleid = packet.payload.readInt32BE();
+
+                if (0 === srcLen) {
+                    banlist[roleid] = true;
+                }
             } else if (0xE3 === packet.opcode) {
                 roleid = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
             } else {
