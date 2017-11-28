@@ -2,7 +2,7 @@
 
 module.exports = function (options) {
     options = Object.assign({}, {
-        count: 3,
+        count: 5,
         time: 1000
     }, options || {});
 
