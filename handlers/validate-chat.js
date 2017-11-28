@@ -2,7 +2,7 @@
 
 module.exports = function (options) {
     options = Object.assign({}, {
-        count: 10,
+        count: 3,
         time: 1000
     }, options || {});
 
@@ -41,8 +41,11 @@ module.exports = function (options) {
             } else if (0xE3 === packet.opcode) {
                 roleid = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
             } else {
+                packet.payload.setPointer(0);
                 return next();
             }
+
+            packet.payload.setPointer(0);
 
             if (banlist[roleid]) {
                 return next(1);
