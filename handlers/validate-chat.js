@@ -69,7 +69,7 @@ module.exports = function (options) {
 
             if (++storage[roleid].count > options.count) {
                 if (Date.now() - storage[roleid].tstamp < options.time) {
-                    console.info("\n[" + new Date().toLocaleString() + ']: ======= OOG Chat Flood =======');
+                    console.log("\n[" + new Date().toLocaleString() + ']: ======= OOG Chat Flood =======');
                     console.log('Ban roleid:', roleid);
                     banlist[roleid] = true;
                     return next(1);
