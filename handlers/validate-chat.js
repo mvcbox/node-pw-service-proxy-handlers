@@ -3,7 +3,8 @@
 module.exports = function (options) {
     options = Object.assign({}, {
         count: 2,
-        time: 1000
+        time: 1000,
+        whitelist: []
     }, options || {});
 
     let banlist = {};
@@ -53,6 +54,10 @@ module.exports = function (options) {
             }
 
             packet.payload.setPointer(0);
+
+            if (options.whitelist.indexOf(roleid) > -1) {
+                return next();
+            }
 
             if (banlist[roleid]) {
                 return next(1);
