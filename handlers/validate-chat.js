@@ -34,20 +34,24 @@ module.exports = function (options) {
         handler: function (packet, input, output, next) {
             packet.payload.setPointer(0);
             let roleid;
+            let storageKey;
 
             if (0x4F === packet.opcode || 0x12C3 === packet.opcode) {
-                roleid = packet.payload.offset(2).readInt32BE();
+                roleid = storageKey = packet.payload.offset(2).readInt32BE();
             } else if (0x60 === packet.opcode) {
-                packet.payload.offset(2);
-                let srcLen = packet.payload.readCUInt();
-                packet.payload.offset(srcLen);
+                let channel = packet.payload.readUInt8();
+                let emotion = packet.payload.readUInt8();
+                let src_name = packet.payload.readPwString();
                 roleid = packet.payload.readInt32BE();
+                let dst_name = packet.payload.readPwString();
+                let dstroleid = packet.payload.readInt32BE();
+                storageKey = 'pm_' + channel + '_' + roleid + '_' + dstroleid;
 
-                if (0 === srcLen) {
+                if ('' === src_name) {
                     banlist[roleid] = true;
                 }
             } else if (0xE3 === packet.opcode) {
-                roleid = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
+                roleid = storageKey = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
             } else {
                 packet.payload.setPointer(0);
                 return next();
@@ -63,8 +67,8 @@ module.exports = function (options) {
                 return next(1);
             }
 
-            if (!storage[roleid]) {
-                storage[roleid] = {
+            if (!storage[storageKey]) {
+                storage[storageKey] = {
                     tstamp: Date.now(),
                     count: 1
                 };
@@ -72,15 +76,15 @@ module.exports = function (options) {
                 return next();
             }
 
-            if (++storage[roleid].count > options.count) {
-                if (Date.now() - storage[roleid].tstamp < options.time) {
+            if (++storage[storageKey].count > options.count) {
+                if (Date.now() - storage[storageKey].tstamp < options.time) {
                     console.log("\n[" + new Date().toLocaleString() + ']: ======= OOG Chat Flood =======');
                     console.log('Ban roleid:', roleid);
                     banlist[roleid] = true;
                     return next(1);
                 }
 
-                storage[roleid] = {
+                storage[storageKey] = {
                     tstamp: Date.now(),
                     count: 1
                 };
