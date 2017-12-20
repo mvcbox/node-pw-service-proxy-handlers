@@ -1,6 +1,6 @@
 {
   "name": "pw-service-proxy-handlers",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "description": "Handlers for node-pw-service-proxy",
   "main": "index.js",
   "scripts": {
