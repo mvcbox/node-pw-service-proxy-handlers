@@ -5,5 +5,6 @@ module.exports = {
     validatePacketGetSavedMsg: require('./handlers/validate-packet-get-saved-msg'),
     validatePacketCreateRole: require('./handlers/validate-packet-create-role'),
     validateChat: require('./handlers/validate-chat'),
-    frequencyControl: require('./handlers/frequency-control')
+    frequencyControl: require('./handlers/frequency-control'),
+    frequencyControlUnknown: require('./handlers/frequency-control-unknown'),
 };
