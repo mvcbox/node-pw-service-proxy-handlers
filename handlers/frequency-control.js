@@ -8,7 +8,8 @@ const PACKET_LIST = {
     0xE3: 'ChatRoomSpeak',
     0xFA1: 'TradeStart',
     0xCA: 'AddFriend',
-    0xDD: 'ChatRoomInvite'
+    0xDD: 'ChatRoomInvite',
+    0x352: 'BattleGetMap'
 };
 
 module.exports = function (options) {
@@ -96,9 +97,15 @@ module.exports = function (options) {
                     storageKey = '0xCA_' + roleid;
                     break;
 
+                // ChatRoomInvite
                 case 0xDD:
                     roleid = packet.payload.offset(6).readInt32BE();
                     storageKey = '0xDD_' + roleid;
+                    break;
+
+                case 0x352:
+                    roleid = packet.payload.readInt32BE();
+                    storageKey = '0x352_' + roleid;
                     break;
 
                 // Other
