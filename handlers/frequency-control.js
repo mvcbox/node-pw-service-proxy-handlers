@@ -27,6 +27,7 @@ module.exports = function (options) {
     let storage = {};
 
     setInterval(function () {
+        banlist = {};
         storage = {};
     }, 1000 * 60 * 15);
 
