@@ -9,7 +9,8 @@ const PACKET_LIST = {
     0xFA1: 'TradeStart',
     0xCA: 'AddFriend',
     0xDD: 'ChatRoomInvite',
-    0x352: 'BattleGetMap'
+    0x352: 'BattleGetMap',
+    0x226: 'MatrixPasswdArg'
 };
 
 module.exports = function (options) {
@@ -27,7 +28,7 @@ module.exports = function (options) {
 
     setInterval(function () {
         storage = {};
-    }, 1000 * 60 * 60);
+    }, 1000 * 60 * 15);
 
     return {
         /**
@@ -49,20 +50,20 @@ module.exports = function (options) {
         handler: function (packet, input, output, next) {
             packet.payload.setPointer(0);
             let frequency = options.frequency[packet.opcode] || options.defaultFrequency;
-            let roleid;
+            let uniqueIdentifier;
             let storageKey;
 
             switch (packet.opcode) {
                 // PublicChat
                 case 0x4F:
-                    roleid = packet.payload.offset(2).readInt32BE();
-                    storageKey = '0x4F_' + roleid;
+                    uniqueIdentifier = packet.payload.offset(2).readInt32BE();
+                    storageKey = '0x4F_' + uniqueIdentifier;
                     break;
 
                 // FactionChat
                 case 0x12C3:
-                    roleid = packet.payload.offset(2).readInt32BE();
-                    storageKey = '0x12C3_' + roleid;
+                    uniqueIdentifier = packet.payload.offset(2).readInt32BE();
+                    storageKey = '0x12C3_' + uniqueIdentifier;
                     break;
 
                 // PrivateChat
@@ -70,57 +71,71 @@ module.exports = function (options) {
                     let channel = packet.payload.readUInt8();
                     let emotion = packet.payload.readUInt8();
                     let src_name = packet.payload.readPwString();
-                    roleid = packet.payload.readInt32BE();
+                    uniqueIdentifier = packet.payload.readInt32BE();
                     let dst_name = packet.payload.readPwString();
                     let dstroleid = packet.payload.readInt32BE();
-                    storageKey = '0x60_' + channel + '_' + roleid + '_' + dstroleid;
+                    storageKey = '0x60_' + channel + '_' + uniqueIdentifier + '_' + dstroleid;
                     if ('' === src_name) {
-                        banlist[roleid] = true;
+                        banlist[uniqueIdentifier] = true;
                     }
                     break;
 
                 // ChatRoomSpeak
                 case 0xE3:
-                    roleid = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
-                    storageKey = '0xE3_' + roleid;
+                    uniqueIdentifier = packet.payload.offset(3).offset(packet.payload.readCUInt()).readInt32BE();
+                    storageKey = '0xE3_' + uniqueIdentifier;
                     break;
 
                 // TradeStart
                 case 0xFA1:
-                    roleid = packet.payload.readInt32BE();
-                    storageKey = '0xFA1_' + roleid;
+                    uniqueIdentifier = packet.payload.readInt32BE();
+                    storageKey = '0xFA1_' + uniqueIdentifier;
                     break;
 
                 // AddFriend
                 case 0xCA:
-                    roleid = packet.payload.readInt32BE();
-                    storageKey = '0xCA_' + roleid;
+                    uniqueIdentifier = packet.payload.readInt32BE();
+                    storageKey = '0xCA_' + uniqueIdentifier;
                     break;
 
                 // ChatRoomInvite
                 case 0xDD:
-                    roleid = packet.payload.offset(6).readInt32BE();
-                    storageKey = '0xDD_' + roleid;
+                    uniqueIdentifier = packet.payload.offset(6).readInt32BE();
+                    storageKey = '0xDD_' + uniqueIdentifier;
                     break;
 
+                // BattleGetMap
                 case 0x352:
-                    roleid = packet.payload.readInt32BE();
-                    storageKey = '0x352_' + roleid;
+                    uniqueIdentifier = packet.payload.readInt32BE();
+                    storageKey = '0x352_' + uniqueIdentifier;
+                    break;
+
+                // MatrixPasswdArg
+                case 0x226:
+                    packet.payload.offset(4); // localsid
+                    packet.payload.offset(packet.payload.readCUInt()); // account
+                    packet.payload.offset(packet.payload.readCUInt()); // challenge
+                    uniqueIdentifier = [
+                        packet.payload.readUInt8(),
+                        packet.payload.readUInt8(),
+                        packet.payload.readUInt8(),
+                        packet.payload.readUInt8()
+                    ].reverse().join('.');
+                    storageKey = '0x226_' + uniqueIdentifier;
                     break;
 
                 // Other
                 default:
-                    packet.payload.setPointer(0);
                     return next();
             }
 
             packet.payload.setPointer(0);
 
-            if (options.whitelist.indexOf(roleid) > -1) {
+            if (options.whitelist.indexOf(uniqueIdentifier) > -1) {
                 return next();
             }
 
-            if (banlist[roleid]) {
+            if (banlist[uniqueIdentifier]) {
                 return next(1);
             }
 
@@ -137,9 +152,10 @@ module.exports = function (options) {
                 if (Date.now() - storage[storageKey].tstamp < frequency.time) {
                     console.log("\n[" + new Date().toLocaleString() + ']: ============ Frequency control ============');
                     console.log('Opcode:', '0x' + packet.opcode.toString(16).toUpperCase());
+                    console.log('Name:', PACKET_LIST[packet.opcode]);
                     console.log('Storage key:', storageKey);
-                    console.log('Ban roleid:', roleid);
-                    banlist[roleid] = true;
+                    console.log('Ban unique identifier:', uniqueIdentifier);
+                    banlist[uniqueIdentifier] = true;
                     return next(1);
                 }
 
