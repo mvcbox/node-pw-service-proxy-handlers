@@ -15,7 +15,12 @@ const PACKET_LIST = {
 
 module.exports = function (options) {
     options = Object.assign({}, {
-        frequency: {},
+        frequency: {
+            0x226: {
+                count: 2,
+                time: 1000
+            }
+        },
         defaultFrequency: {
             count: 5,
             time: 1000
@@ -114,7 +119,7 @@ module.exports = function (options) {
                 // MatrixPasswdArg
                 case 0x226:
                     packet.payload.offset(4); // localsid
-                    packet.payload.offset(packet.payload.readCUInt()); // account
+                    let account = packet.payload.readString(packet.payload.readCUInt());
                     packet.payload.offset(packet.payload.readCUInt()); // challenge
                     uniqueIdentifier = [
                         packet.payload.readUInt8(),
@@ -122,7 +127,7 @@ module.exports = function (options) {
                         packet.payload.readUInt8(),
                         packet.payload.readUInt8()
                     ].reverse().join('.');
-                    storageKey = '0x226_' + uniqueIdentifier;
+                    storageKey = '0x226_' + account + '_' + uniqueIdentifier;
                     break;
 
                 // Other
