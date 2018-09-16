@@ -8,7 +8,7 @@ module.exports = function (options) {
     console.log('============= Frequency control unknown - init =============');
 
     options = Object.assign({
-        time: 3000, //ms
+        time: 1000, //ms
         count: 50,
         bantime: 600000,
     }, options || {});
