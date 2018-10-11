@@ -1,6 +1,6 @@
 {
   "name": "pw-service-proxy-handlers",
-  "version": "0.9.6",
+  "version": "1.0.0",
   "description": "Handlers for node-pw-service-proxy",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/mvcbox/node-pw-service-proxy-handlers#readme",
   "dependencies": {
-    "lodash": "^4.17.10",
-    "pw-buffer": "^0.2.2"
+    "lodash": "^4.17.11",
+    "pw-buffer": "^1.0.0"
   }
 }
